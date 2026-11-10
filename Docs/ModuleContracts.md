@@ -7,6 +7,7 @@
 - `IWAInteractable`：交互文本和 `Interact(Interactor)`；Interact 只能经服务器调用。
 - `IWAPlayerInfo`：HUD 只读生命和生命变化事件，不暴露属性写接口。
 - `IWAAbilityAvatar`：测试攻击表现与死亡表现，由 Character 实现。
+- `UWAInputRouter`：GameInstance 级输入事件路由；PlayerController 的 Escape 只广播菜单请求，WAUI 负责显示，不产生 WAPlayer 到 WAUI 的反向依赖。
 
 ## Gameplay Tags
 

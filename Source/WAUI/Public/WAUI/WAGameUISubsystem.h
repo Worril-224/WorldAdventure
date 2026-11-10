@@ -14,10 +14,16 @@ class WAUI_API UWAGameUISubsystem : public ULocalPlayerSubsystem
 public:
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 	virtual void Deinitialize() override;
+	void ToggleGameMenu();
 
 private:
 	UPROPERTY(Transient)
 	TObjectPtr<UUserWidget> RootWidget;
+
+	UPROPERTY(Transient)
+	TObjectPtr<UUserWidget> GameMenuWidget;
+
+	bool bGameMenuVisible = false;
 
 	void HandlePlayerControllerChanged(APlayerController* NewPlayerController);
 };

@@ -8,4 +8,10 @@ UCLASS()
 class WAPLAYER_API AWAPlayerController : public APlayerController
 {
 	GENERATED_BODY()
+
+protected:
+	virtual void SetupInputComponent() override;
+
+private:
+	void RequestGameMenu();
 };
