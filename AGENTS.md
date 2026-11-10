@@ -9,6 +9,7 @@
 
 ## 所有权与依赖
 
+- `WorldAdventure`：仅提供主游戏模块和启动符号，不实现玩法。
 - `WACore`：公共类型、接口、日志和 Native Gameplay Tags，不依赖任何业务模块。
 - `WAAbilities -> WACore`：GAS、生命、测试攻击和死亡通知，不引用具体玩家或 UI。
 - `WAWorld -> WACore`：World Partition 支持、探索点和世界交互。
@@ -33,6 +34,7 @@
 - 不为显而易见的代码添加注释；服务器校验、网络所有权和非显然生命周期必须说明。
 - 日志使用各模块 `LogWA*` 类别，不用 `printf`/`UE_LOG(LogTemp)`。
 - 资产前缀：`BP_`、`WBP_`、`GA_`、`GE_`、`DA_`、`DT_`、`IA_`、`IMC_`、`ABP_`。
+- 纯 C++ UMG 必须在 `NativeOnInitialized` 创建 `WidgetTree` 内容，不得在 `NativeConstruct` 才设置根控件。Python 修改 `MapKey` 返回的结构体后必须写回 `DefaultKeyMappings`，并重新读取资产确认修饰器存在。
 - 二进制资产使用 Git LFS；不要提交 `Binaries`、`Intermediate`、`Saved`、`DerivedDataCache` 或 `Builds`。
 
 ## 网络底线

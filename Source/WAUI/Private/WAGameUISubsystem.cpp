@@ -1,6 +1,7 @@
 #include "WAUI/WAGameUISubsystem.h"
 
 #include "Blueprint/UserWidget.h"
+#include "Containers/Ticker.h"
 #include "Engine/LocalPlayer.h"
 #include "Engine/World.h"
 #include "GameFramework/PlayerController.h"
@@ -30,32 +31,44 @@ void UWAGameUISubsystem::HandlePlayerControllerChanged(APlayerController* NewPla
 		return;
 	}
 
-	if (RootWidget)
+	TWeakObjectPtr<APlayerController> Controller = NewPlayerController;
+	FTSTicker::GetCoreTicker().AddTicker(FTickerDelegate::CreateWeakLambda(this, [this, Controller](float)
 	{
-		RootWidget->RemoveFromParent();
-		RootWidget = nullptr;
-	}
+		if (!Controller.IsValid())
+		{
+			return false;
+		}
 
-	UWorld* World = NewPlayerController->GetWorld();
-	const bool bMainMenu = World && World->GetMapName().Contains(TEXT("L_MainMenu"));
-	RootWidget = CreateWidget<UUserWidget>(NewPlayerController, bMainMenu ? UWAMainMenuWidget::StaticClass() : UWAHUDWidget::StaticClass());
-	if (!RootWidget)
-	{
-		return;
-	}
-	RootWidget->AddToViewport();
+		APlayerController* PlayerController = Controller.Get();
+		if (RootWidget)
+		{
+			RootWidget->RemoveFromParent();
+			RootWidget = nullptr;
+		}
 
-	if (bMainMenu)
-	{
-		FInputModeUIOnly InputMode;
-		InputMode.SetWidgetToFocus(RootWidget->TakeWidget());
-		InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
-		NewPlayerController->SetInputMode(InputMode);
-		NewPlayerController->SetShowMouseCursor(true);
-	}
-	else
-	{
-		NewPlayerController->SetInputMode(FInputModeGameOnly());
-		NewPlayerController->SetShowMouseCursor(false);
-	}
+		UWorld* World = PlayerController->GetWorld();
+		const bool bMainMenu = World && World->GetMapName().Contains(TEXT("L_MainMenu"));
+		RootWidget = CreateWidget<UUserWidget>(PlayerController, bMainMenu ? UWAMainMenuWidget::StaticClass() : UWAHUDWidget::StaticClass());
+		if (!RootWidget)
+		{
+			return false;
+		}
+		RootWidget->AddToViewport();
+
+		if (bMainMenu)
+		{
+			RootWidget->SetIsFocusable(true);
+			FInputModeUIOnly InputMode;
+			InputMode.SetWidgetToFocus(RootWidget->TakeWidget());
+			InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+			PlayerController->SetInputMode(InputMode);
+			PlayerController->SetShowMouseCursor(true);
+		}
+		else
+		{
+			PlayerController->SetInputMode(FInputModeGameOnly());
+			PlayerController->SetShowMouseCursor(false);
+		}
+		return false;
+	}), 0.1f);
 }

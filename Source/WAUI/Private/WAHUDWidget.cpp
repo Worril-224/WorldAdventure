@@ -12,9 +12,9 @@
 #include "WACore/WAPlayerInfo.h"
 #include "WAGame/WAGameState.h"
 
-void UWAHUDWidget::NativeConstruct()
+void UWAHUDWidget::NativeOnInitialized()
 {
-	Super::NativeConstruct();
+	Super::NativeOnInitialized();
 
 	UCanvasPanel* Canvas = WidgetTree->ConstructWidget<UCanvasPanel>();
 	WidgetTree->RootWidget = Canvas;

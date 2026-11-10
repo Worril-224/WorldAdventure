@@ -1,6 +1,7 @@
 #include "WAUI/WAMainMenuWidget.h"
 
 #include "Blueprint/WidgetTree.h"
+#include "Components/Border.h"
 #include "Components/Button.h"
 #include "Components/CanvasPanel.h"
 #include "Components/CanvasPanelSlot.h"
@@ -10,6 +11,7 @@
 #include "Engine/GameInstance.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "WAGame/WASessionSubsystem.h"
+#include "WAUI/WAUILog.h"
 
 namespace
 {
@@ -32,12 +34,17 @@ namespace
 	}
 }
 
-void UWAMainMenuWidget::NativeConstruct()
+void UWAMainMenuWidget::NativeOnInitialized()
 {
-	Super::NativeConstruct();
+	Super::NativeOnInitialized();
 
 	UCanvasPanel* Canvas = WidgetTree->ConstructWidget<UCanvasPanel>();
 	WidgetTree->RootWidget = Canvas;
+	UBorder* Background = WidgetTree->ConstructWidget<UBorder>();
+	Background->SetBrushColor(FLinearColor(0.75f, 0.82f, 0.9f));
+	UCanvasPanelSlot* BackgroundSlot = Canvas->AddChildToCanvas(Background);
+	BackgroundSlot->SetAnchors(FAnchors(0.0f, 0.0f, 1.0f, 1.0f));
+	BackgroundSlot->SetOffsets(FMargin(0.0f));
 	UVerticalBox* Menu = WidgetTree->ConstructWidget<UVerticalBox>();
 	UCanvasPanelSlot* MenuSlot = Canvas->AddChildToCanvas(Menu);
 	MenuSlot->SetAnchors(FAnchors(0.5f));
@@ -55,10 +62,10 @@ void UWAMainMenuWidget::NativeConstruct()
 	UButton* QuitButton = AddButton(WidgetTree, Menu, NSLOCTEXT("WAUI", "Quit", "Quit"));
 	MessageText = AddText(WidgetTree, Menu, FText::GetEmpty());
 
-	CoopButton->OnClicked.AddUObject(this, &UWAMainMenuWidget::HostCoop);
-	PvPButton->OnClicked.AddUObject(this, &UWAMainMenuWidget::HostPvP);
-	JoinButton->OnClicked.AddUObject(this, &UWAMainMenuWidget::Join);
-	QuitButton->OnClicked.AddUObject(this, &UWAMainMenuWidget::Quit);
+	CoopButton->OnClicked.AddDynamic(this, &UWAMainMenuWidget::HostCoop);
+	PvPButton->OnClicked.AddDynamic(this, &UWAMainMenuWidget::HostPvP);
+	JoinButton->OnClicked.AddDynamic(this, &UWAMainMenuWidget::Join);
+	QuitButton->OnClicked.AddDynamic(this, &UWAMainMenuWidget::Quit);
 
 	if (UWASessionSubsystem* Session = GetGameInstance()->GetSubsystem<UWASessionSubsystem>())
 	{
@@ -80,6 +87,7 @@ void UWAMainMenuWidget::NativeDestruct()
 
 void UWAMainMenuWidget::HostCoop()
 {
+	UE_LOG(LogWAUI, Log, TEXT("Host Cooperative clicked"));
 	GetGameInstance()->GetSubsystem<UWASessionSubsystem>()->HostGame(EWAGameMode::Cooperative);
 }
 

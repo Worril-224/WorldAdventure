@@ -6,5 +6,6 @@ public class WAEditor : ModuleRules
     {
         PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
         PublicDependencyModuleNames.AddRange(new[] { "Core", "CoreUObject", "Engine", "UnrealEd", "WACore", "WAAbilities", "WAWorld", "WAPlayer", "WAGame", "WAUI" });
+        PrivateDependencyModuleNames.Add("AssetTools");
     }
 }

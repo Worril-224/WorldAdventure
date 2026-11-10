@@ -8,6 +8,6 @@ public class WorldAdventureTarget : TargetRules
         Type = TargetType.Game;
         DefaultBuildSettings = BuildSettingsVersion.Latest;
         IncludeOrderVersion = EngineIncludeOrderVersion.Latest;
-        ExtraModuleNames.AddRange(new[] { "WACore", "WAAbilities", "WAWorld", "WAPlayer", "WAGame", "WAUI" });
+        ExtraModuleNames.AddRange(new[] { "WorldAdventure", "WACore", "WAAbilities", "WAWorld", "WAPlayer", "WAGame", "WAUI" });
     }
 }

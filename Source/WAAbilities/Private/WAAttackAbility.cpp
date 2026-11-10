@@ -13,7 +13,7 @@ UWAAttackAbility::UWAAttackAbility()
 {
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
 	NetExecutionPolicy = EGameplayAbilityNetExecutionPolicy::LocalPredicted;
-	AbilityTags.AddTag(TAG_WA_Ability_TestAttack);
+	SetAssetTags(FGameplayTagContainer(TAG_WA_Ability_TestAttack));
 	ActivationBlockedTags.AddTag(TAG_WA_State_Dead);
 }
 

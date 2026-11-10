@@ -26,9 +26,16 @@ def add_modifier(context, mapping, modifier_class, **properties):
 
 
 def map_key(context, action, key_name, modifiers=()):
-    mapping = context.map_key(action, unreal.Key(key_name=key_name))
+    key = unreal.Key()
+    key.set_editor_property("key_name", key_name)
+    mapping = context.map_key(action, key)
     for modifier_class, properties in modifiers:
-        add_modifier(context, mapping, modifier_class, properties)
+        add_modifier(context, mapping, modifier_class, **properties)
+    mapping_data = context.get_editor_property("default_key_mappings")
+    mappings = list(mapping_data.get_editor_property("mappings"))
+    mappings[-1] = mapping
+    mapping_data.set_editor_property("mappings", mappings)
+    context.set_editor_property("default_key_mappings", mapping_data)
     return mapping
 
 
@@ -62,11 +69,12 @@ def create_inputs():
     log("Enhanced Input assets generated.")
 
 
-def duplicate_map(template_path, target_path):
+def create_map(target_path, world_partition):
     created = not unreal.EditorAssetLibrary.does_asset_exist(target_path)
     if created:
-        if not unreal.EditorAssetLibrary.duplicate_asset(template_path, target_path):
-            raise RuntimeError(f"Could not duplicate {template_path} to {target_path}")
+        if not unreal.WAContentFactory.create_map(target_path, world_partition):
+            raise RuntimeError(f"Could not create {target_path}")
+        unreal.EditorAssetLibrary.save_asset(target_path)
     unreal.EditorLevelLibrary.load_level(target_path)
     return created
 
@@ -90,7 +98,7 @@ def spawn_once(actor_class, label, location, scale=None):
 
 def create_main_menu():
     path = f"{ROOT}/Maps/L_MainMenu"
-    duplicate_map("/Engine/Maps/Templates/Template_Default", path)
+    create_map(path, False)
     get_world_settings("/Script/WAGame.WAMainMenuGameMode")
     unreal.EditorLevelLibrary.save_current_level()
     log("Main menu map generated.")
@@ -98,7 +106,7 @@ def create_main_menu():
 
 def create_demo_map():
     path = f"{ROOT}/Maps/L_Demo"
-    if not duplicate_map("/Engine/Maps/Templates/OpenWorld", path):
+    if not create_map(path, True):
         log("Demo map already exists; preserving its actors and World Partition packages.")
         return
     get_world_settings("/Script/WAGame.WAGameMode")
@@ -106,6 +114,10 @@ def create_demo_map():
     ground = spawn_once(unreal.StaticMeshActor, "WA_GrayboxGround", (0, 0, -50), (1000, 1000, 1))
     ground.static_mesh_component.set_static_mesh(unreal.load_asset("/Engine/BasicShapes/Cube"))
     ground.static_mesh_component.set_mobility(unreal.ComponentMobility.STATIC)
+
+    light = spawn_once(unreal.DirectionalLight, "WA_DirectionalLight", (0, 0, 1000))
+    light.set_actor_rotation(unreal.Rotator(pitch=-45.0, yaw=45.0, roll=0.0), False)
+    spawn_once(unreal.SkyLight, "WA_SkyLight", (0, 0, 500))
 
     explore_class = unreal.load_class(None, "/Script/WAWorld.WAExplorePoint")
     spawn_once(explore_class, "WA_ExplorePoint_A", (0, 2000, 75))

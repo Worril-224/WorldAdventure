@@ -11,7 +11,7 @@ AWAPlayerState::AWAPlayerState()
 	AbilitySystemComponent->SetIsReplicated(true);
 	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Mixed);
 	HealthAttributes = CreateDefaultSubobject<UWAHealthAttributeSet>(TEXT("HealthAttributes"));
-	NetUpdateFrequency = 20.0f;
+	SetNetUpdateFrequency(20.0f);
 }
 
 void AWAPlayerState::BeginPlay()

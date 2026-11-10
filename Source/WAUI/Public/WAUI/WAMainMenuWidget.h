@@ -13,7 +13,7 @@ class WAUI_API UWAMainMenuWidget : public UUserWidget
 	GENERATED_BODY()
 
 protected:
-	virtual void NativeConstruct() override;
+	virtual void NativeOnInitialized() override;
 	virtual void NativeDestruct() override;
 
 private:
@@ -23,9 +23,16 @@ private:
 	UPROPERTY(Transient)
 	TObjectPtr<UTextBlock> MessageText;
 
+	UFUNCTION()
 	void HostCoop();
+
+	UFUNCTION()
 	void HostPvP();
+
+	UFUNCTION()
 	void Join();
+
+	UFUNCTION()
 	void Quit();
 	void SetMessage(const FText& Message);
 };

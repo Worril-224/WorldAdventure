@@ -1,7 +1,7 @@
 #include "WAGame/WAGameMode.h"
 
 #include "GameFramework/Pawn.h"
-#include "Kismet/GameplayStatics.h"
+#include "Misc/Parse.h"
 #include "TimerManager.h"
 #include "WAGame/WAGameLog.h"
 #include "WAGame/WAGameState.h"
@@ -21,7 +21,8 @@ AWAGameMode::AWAGameMode()
 void AWAGameMode::InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage)
 {
 	Super::InitGame(MapName, Options, ErrorMessage);
-	const FString ModeOption = UGameplayStatics::GetOption(Options, TEXT("Mode"));
+	FString ModeOption;
+	FParse::Value(*Options, TEXT("Mode="), ModeOption);
 	MatchMode = ModeOption.Equals(TEXT("PvP"), ESearchCase::IgnoreCase)
 		? EWAGameMode::PlayerVersusPlayer
 		: EWAGameMode::Cooperative;

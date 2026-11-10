@@ -4,6 +4,7 @@
   "Category": "Game",
   "Description": "Third-person open-world LAN cooperation and PvP framework demo.",
   "Modules": [
+    { "Name": "WorldAdventure", "Type": "Runtime", "LoadingPhase": "Default" },
     { "Name": "WACore", "Type": "Runtime", "LoadingPhase": "Default" },
     { "Name": "WAAbilities", "Type": "Runtime", "LoadingPhase": "Default" },
     { "Name": "WAWorld", "Type": "Runtime", "LoadingPhase": "Default" },

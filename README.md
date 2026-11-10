@@ -2,11 +2,11 @@
 
 UE 5.8.4 C++ 工程，用于验证第三人称开放世界、2–4 人局域网合作探索和 PvP。当前使用灰盒场景和占位角色，不含正式内容。
 
-> 当前状态：框架源码初版，编译、内容生成和联机验收仍在进行，尚非已验证可玩版本。
+> 当前状态：Editor 与 Win64 Development 构建通过；本机双进程合作/PvP 连接、角色生成和 HUD 已验证。主菜单点击、移动方向、攻击/复活、完整流送遍历和真实双机仍需按验收表人工确认。
 
 ## 构建
 
-1. 安装 UE 5.8.4、Visual Studio 2022（17.8+）、MSVC 14.44、ATL 和 Windows SDK。
+1. 安装 UE 5.8.4、Visual Studio 2022（17.8+）、MSVC 14.44、ATL、Windows SDK 和 .NET Framework 4.6.2 Developer Pack。
 2. 运行 `Scripts/BuildEditor.bat`。
 3. 首次生成地图和输入资产，运行 `Scripts/GenerateDemoContent.bat`。
 4. 用 UE 5.8.4 打开 `WorldAdventure.uproject`，默认启动图为 `L_Demo`，游戏默认图为 `L_MainMenu`。
@@ -15,6 +15,7 @@ UE 5.8.4 C++ 工程，用于验证第三人称开放世界、2–4 人局域网�
 
 ## 试玩
 
+- 打包后可直接运行 `Builds/Windows/WorldAdventure.exe`；`Builds` 不入库，其他机器需复制完整 `Builds/Windows` 目录。
 - 从主菜单选择 `Host LAN Cooperative` 或 `Host LAN PvP`。
 - 另一台同局域网电脑输入主机 IPv4 地址，选择 `Join by IP`。
 - `WASD` 移动，鼠标控制视角，`Space` 跳跃，鼠标左键测试攻击，`E` 激活探索点。
