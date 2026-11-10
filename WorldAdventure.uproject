@@ -1,0 +1,20 @@
+{
+  "FileVersion": 3,
+  "EngineAssociation": "5.8",
+  "Category": "Game",
+  "Description": "Third-person open-world LAN cooperation and PvP framework demo.",
+  "Modules": [
+    { "Name": "WACore", "Type": "Runtime", "LoadingPhase": "Default" },
+    { "Name": "WAAbilities", "Type": "Runtime", "LoadingPhase": "Default" },
+    { "Name": "WAWorld", "Type": "Runtime", "LoadingPhase": "Default" },
+    { "Name": "WAPlayer", "Type": "Runtime", "LoadingPhase": "Default" },
+    { "Name": "WAGame", "Type": "Runtime", "LoadingPhase": "Default" },
+    { "Name": "WAUI", "Type": "Runtime", "LoadingPhase": "Default" },
+    { "Name": "WAEditor", "Type": "Editor", "LoadingPhase": "Default" }
+  ],
+  "Plugins": [
+    { "Name": "EnhancedInput", "Enabled": true },
+    { "Name": "GameplayAbilities", "Enabled": true },
+    { "Name": "PythonScriptPlugin", "Enabled": true }
+  ]
+}
