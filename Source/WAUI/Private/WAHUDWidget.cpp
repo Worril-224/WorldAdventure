@@ -5,12 +5,14 @@
 #include "Components/CanvasPanelSlot.h"
 #include "Components/TextBlock.h"
 #include "Components/VerticalBox.h"
+#include "Engine/GameInstance.h"
 #include "Engine/World.h"
 #include "GameFramework/GameStateBase.h"
 #include "GameFramework/PlayerController.h"
 #include "GameFramework/PlayerState.h"
 #include "WACore/WAPlayerInfo.h"
 #include "WAGame/WAGameState.h"
+#include "WAGame/WASessionSubsystem.h"
 
 void UWAHUDWidget::NativeOnInitialized()
 {
@@ -35,14 +37,30 @@ void UWAHUDWidget::NativeOnInitialized()
 	HealthText = AddLine(NSLOCTEXT("WAUI", "HealthInitial", "Health: 100 / 100"));
 	ModeText = AddLine(NSLOCTEXT("WAUI", "ModeInitial", "Mode: Connecting"));
 	ConnectionText = AddLine(FText::GetEmpty());
+	SessionMessageText = AddLine(FText::GetEmpty());
 	PlayersText = AddLine(FText::GetEmpty());
 	AddLine(NSLOCTEXT("WAUI", "Controls", "WASD Move | Mouse Look | Space Jump | LMB Test Attack | E Interact"));
 	TryBindState();
 	RefreshPlayersAndConnection();
+
+	if (UGameInstance* GameInstance = GetGameInstance())
+	{
+		if (UWASessionSubsystem* Session = GameInstance->GetSubsystem<UWASessionSubsystem>())
+		{
+			Session->OnSessionMessage.AddUObject(this, &UWAHUDWidget::SetSessionMessage);
+		}
+	}
 }
 
 void UWAHUDWidget::NativeDestruct()
 {
+	if (UGameInstance* GameInstance = GetGameInstance())
+	{
+		if (UWASessionSubsystem* Session = GameInstance->GetSubsystem<UWASessionSubsystem>())
+		{
+			Session->OnSessionMessage.RemoveAll(this);
+		}
+	}
 	if (IWAPlayerInfo* PlayerInfo = Cast<IWAPlayerInfo>(BoundPlayerState.Get()))
 	{
 		PlayerInfo->GetHealthChangedDelegate().RemoveAll(this);
@@ -112,6 +130,14 @@ void UWAHUDWidget::UpdateMode(EWAGameMode Mode)
 		ModeText->SetText(FText::Format(NSLOCTEXT("WAUI", "ModeFormat", "Mode: {0}"), Mode == EWAGameMode::PlayerVersusPlayer
 			? NSLOCTEXT("WAUI", "PvP", "LAN PvP")
 			: NSLOCTEXT("WAUI", "Coop", "LAN Cooperative")));
+	}
+}
+
+void UWAHUDWidget::SetSessionMessage(const FText& Message)
+{
+	if (SessionMessageText)
+	{
+		SessionMessageText->SetText(Message);
 	}
 }
 

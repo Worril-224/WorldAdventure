@@ -16,7 +16,7 @@
 | Health/MaxHealth | PlayerState ASC | GAS Mixed 属性复制 | 仅服务器 GE/属性重置 |
 | `WA.State.Dead` | PlayerState ASC | GAS Tag 复制 | 服务器死亡/复活流程 |
 | 测试攻击 | 本地 Controller 的 Character | GAS LocalPredicted 激活 | 服务器命中、距离、目标、模式、死亡状态和 0.5 秒限频 |
-| `Character.ServerInteract` | 拥有客户端 | Reliable、低频按键 | 非空、流送后仍有效、300cm 距离 |
+| `Character.ServerInteract` | 拥有客户端 | Reliable、低频按键 | 非空、流送后仍有效、300cm 距离；服务器按 Character 使用 World 时间执行 0.2 秒交互冷却 |
 | `Character.MulticastAttackFeedback` | 服务器 | Unreliable，仅调试表现 | 不承载伤害 |
 
 ## 会话

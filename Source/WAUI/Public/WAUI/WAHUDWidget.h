@@ -32,6 +32,9 @@ private:
 	UPROPERTY(Transient)
 	TObjectPtr<UTextBlock> ConnectionText;
 
+	UPROPERTY(Transient)
+	TObjectPtr<UTextBlock> SessionMessageText;
+
 	TWeakObjectPtr<APlayerState> BoundPlayerState;
 	TWeakObjectPtr<AWAGameState> BoundGameState;
 	float RefreshRemaining = 0.0f;
@@ -39,5 +42,6 @@ private:
 	void TryBindState();
 	void UpdateHealth(float Health, float MaxHealth);
 	void UpdateMode(EWAGameMode Mode);
+	void SetSessionMessage(const FText& Message);
 	void RefreshPlayersAndConnection();
 };

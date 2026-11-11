@@ -59,6 +59,8 @@ private:
 	UPROPERTY(ReplicatedUsing = OnRep_Dead)
 	bool bDead = false;
 
+	double NextServerInteractTime = 0.0;
+
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
 	void TryAttack();

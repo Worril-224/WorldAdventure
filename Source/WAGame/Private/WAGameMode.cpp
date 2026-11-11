@@ -1,5 +1,6 @@
 #include "WAGame/WAGameMode.h"
 
+#include "GameFramework/HUD.h"
 #include "GameFramework/Pawn.h"
 #include "Misc/Parse.h"
 #include "TimerManager.h"
@@ -15,7 +16,7 @@ AWAGameMode::AWAGameMode()
 	PlayerControllerClass = AWAPlayerController::StaticClass();
 	PlayerStateClass = AWAPlayerState::StaticClass();
 	GameStateClass = AWAGameState::StaticClass();
-	HUDClass = nullptr;
+	HUDClass = AHUD::StaticClass();
 }
 
 void AWAGameMode::InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage)

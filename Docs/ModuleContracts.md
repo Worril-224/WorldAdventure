@@ -16,7 +16,7 @@
 
 ## 默认类与资产
 
-- C++ 默认类由 `AWAGameMode` 设置，不要求蓝图子类。
+- C++ 默认类由 `AWAGameMode` 设置，不要求蓝图子类；`HUDClass` 使用引擎 `AHUD`，实际界面仍由 UMG 提供。
 - 输入资产固定路径：`/Game/WA/Characters/Input/IMC_ThirdPerson`、`IA_Move`、`IA_Look`、`IA_Jump`、`IA_Attack`、`IA_Interact`。
 - 地图固定路径：`/Game/WA/Maps/L_MainMenu`、`/Game/WA/Maps/L_Demo`。
 - 占位视觉直接使用 Engine BasicShapes，不引入正式角色资产。

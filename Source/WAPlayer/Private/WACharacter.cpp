@@ -191,6 +191,19 @@ void AWACharacter::TryInteract()
 
 void AWACharacter::ServerInteract_Implementation(AActor* Target)
 {
+	const UWorld* World = GetWorld();
+	if (!World)
+	{
+		return;
+	}
+
+	const double CurrentTime = World->GetTimeSeconds();
+	if (CurrentTime < NextServerInteractTime)
+	{
+		return;
+	}
+	NextServerInteractTime = CurrentTime + 0.2;
+
 	if (bDead || !IsValid(Target) || FVector::DistSquared(GetActorLocation(), Target->GetActorLocation()) > FMath::Square(300.0f))
 	{
 		return;
