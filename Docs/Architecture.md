@@ -24,7 +24,7 @@ PlayerState 拥有可复制 ASC 和 HealthAttributeSet，因此属性在 Charact
 
 ## 世界
 
-`L_Demo` 使用 World Partition/OFPA。探索点 `AWAExplorePoint` 的激活由服务器验证和执行，`bActivated` 复制到客户端。地图只含灰盒地形、出生点和三个探索点。
+`L_Demo` 使用 World Partition/OFPA。探索点 `AWAExplorePoint` 的激活由服务器验证和执行，`bActivated` 复制到客户端。地图包含风格化初始区域、出生营地、三条道路、三个地标、四个出生点和三个探索点；这些静态网格原型不构成正式地图性能承诺。
 
 ## 扩展规则
 

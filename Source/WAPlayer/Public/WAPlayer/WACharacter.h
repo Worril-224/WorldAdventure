@@ -9,8 +9,8 @@
 class UCameraComponent;
 class UInputAction;
 class UInputMappingContext;
+class USceneComponent;
 class USpringArmComponent;
-class UStaticMeshComponent;
 struct FInputActionValue;
 
 UCLASS()
@@ -20,6 +20,7 @@ class WAPLAYER_API AWACharacter : public ACharacter, public IAbilitySystemInterf
 
 public:
 	AWACharacter();
+	virtual void Tick(float DeltaSeconds) override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void OnRep_PlayerState() override;
@@ -36,7 +37,22 @@ private:
 	TObjectPtr<UCameraComponent> FollowCamera;
 
 	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<UStaticMeshComponent> DebugVisual;
+	TObjectPtr<USceneComponent> AdventurerVisual;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<USceneComponent> LeftArmPivot;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<USceneComponent> RightArmPivot;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<USceneComponent> LeftLegPivot;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<USceneComponent> RightLegPivot;
+
+	float RunCyclePhase = 0.0f;
+	float RunBlend = 0.0f;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	TSoftObjectPtr<UInputMappingContext> InputMappingContext;

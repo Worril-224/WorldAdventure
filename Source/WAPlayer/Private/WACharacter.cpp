@@ -4,15 +4,17 @@
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/InputComponent.h"
-#include "Components/SkeletalMeshComponent.h"
+#include "Components/SceneComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "DrawDebugHelpers.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "Engine/StaticMesh.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "InputAction.h"
 #include "InputMappingContext.h"
+#include "Materials/MaterialInterface.h"
 #include "Net/UnrealNetwork.h"
 #include "UObject/ConstructorHelpers.h"
 #include "WACore/WAInteractable.h"
@@ -21,7 +23,7 @@
 
 AWACharacter::AWACharacter()
 {
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = true;
 	bReplicates = true;
 	GetCapsuleComponent()->InitCapsuleSize(42.0f, 96.0f);
 
@@ -44,15 +46,61 @@ AWACharacter::AWACharacter()
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
 	FollowCamera->bUsePawnControlRotation = false;
 
-	DebugVisual = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("DebugVisual"));
-	DebugVisual->SetupAttachment(RootComponent);
-	DebugVisual->SetRelativeScale3D(FVector(0.65, 0.65, 1.75));
-	DebugVisual->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	static ConstructorHelpers::FObjectFinder<UStaticMesh> CubeMesh(TEXT("/Engine/BasicShapes/Cube.Cube"));
-	if (CubeMesh.Succeeded())
+	AdventurerVisual = CreateDefaultSubobject<USceneComponent>(TEXT("AdventurerVisual"));
+	AdventurerVisual->SetupAttachment(RootComponent);
+
+	const auto AddPivot = [this](const FName Name, const FVector& Location)
 	{
-		DebugVisual->SetStaticMesh(CubeMesh.Object);
-	}
+		USceneComponent* Pivot = CreateDefaultSubobject<USceneComponent>(Name);
+		Pivot->SetupAttachment(AdventurerVisual);
+		Pivot->SetRelativeLocation(Location);
+		return Pivot;
+	};
+
+	LeftArmPivot = AddPivot(TEXT("LeftArmPivot"), FVector(0.0, -30.0, 47.0));
+	RightArmPivot = AddPivot(TEXT("RightArmPivot"), FVector(0.0, 30.0, 47.0));
+	LeftLegPivot = AddPivot(TEXT("LeftLegPivot"), FVector(0.0, -12.0, -12.0));
+	RightLegPivot = AddPivot(TEXT("RightLegPivot"), FVector(0.0, 12.0, -12.0));
+
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> CubeMesh(TEXT("/Engine/BasicShapes/Cube.Cube"));
+	static ConstructorHelpers::FObjectFinder<UMaterialInterface> TunicMaterial(TEXT("/Game/WA/Characters/Prototype/M_Prototype_Tunic.M_Prototype_Tunic"));
+	static ConstructorHelpers::FObjectFinder<UMaterialInterface> PantsMaterial(TEXT("/Game/WA/Characters/Prototype/M_Prototype_Pants.M_Prototype_Pants"));
+	static ConstructorHelpers::FObjectFinder<UMaterialInterface> LeatherMaterial(TEXT("/Game/WA/Characters/Prototype/M_Prototype_Leather.M_Prototype_Leather"));
+	static ConstructorHelpers::FObjectFinder<UMaterialInterface> SkinMaterial(TEXT("/Game/WA/Characters/Prototype/M_Prototype_Skin.M_Prototype_Skin"));
+	static ConstructorHelpers::FObjectFinder<UMaterialInterface> HairMaterial(TEXT("/Game/WA/Characters/Prototype/M_Prototype_Hair.M_Prototype_Hair"));
+	static ConstructorHelpers::FObjectFinder<UMaterialInterface> AccentMaterial(TEXT("/Game/WA/Characters/Prototype/M_Prototype_Accent.M_Prototype_Accent"));
+
+	const auto AddPart = [this](const FName Name, USceneComponent* Parent, UMaterialInterface* Material, const FVector& Location, const FVector& Scale)
+	{
+		UStaticMeshComponent* Part = CreateDefaultSubobject<UStaticMeshComponent>(Name);
+		Part->SetupAttachment(Parent);
+		Part->SetStaticMesh(CubeMesh.Object);
+		Part->SetMaterial(0, Material);
+		Part->SetRelativeLocation(Location);
+		Part->SetRelativeScale3D(Scale);
+		Part->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		Part->SetGenerateOverlapEvents(false);
+		Part->SetCanEverAffectNavigation(false);
+	};
+
+	AddPart(TEXT("Torso"), AdventurerVisual, TunicMaterial.Object, FVector(0.0, 0.0, 25.0), FVector(0.30, 0.46, 0.58));
+	AddPart(TEXT("Belt"), AdventurerVisual, LeatherMaterial.Object, FVector(0.0, 0.0, -4.0), FVector(0.32, 0.48, 0.08));
+	AddPart(TEXT("BeltBuckle"), AdventurerVisual, AccentMaterial.Object, FVector(17.0, 0.0, -4.0), FVector(0.04, 0.12, 0.12));
+	AddPart(TEXT("Hips"), AdventurerVisual, PantsMaterial.Object, FVector(0.0, 0.0, -11.0), FVector(0.29, 0.42, 0.16));
+	AddPart(TEXT("Head"), AdventurerVisual, SkinMaterial.Object, FVector(2.0, 0.0, 69.0), FVector(0.32, 0.32, 0.30));
+	AddPart(TEXT("HairCap"), AdventurerVisual, HairMaterial.Object, FVector(1.0, 0.0, 85.0), FVector(0.36, 0.36, 0.10));
+	AddPart(TEXT("HairBack"), AdventurerVisual, HairMaterial.Object, FVector(-14.0, 0.0, 70.0), FVector(0.06, 0.34, 0.30));
+	AddPart(TEXT("Backpack"), AdventurerVisual, LeatherMaterial.Object, FVector(-23.0, 0.0, 28.0), FVector(0.20, 0.36, 0.38));
+	AddPart(TEXT("BackpackFlap"), AdventurerVisual, AccentMaterial.Object, FVector(-33.5, 0.0, 35.0), FVector(0.03, 0.30, 0.10));
+
+	AddPart(TEXT("LeftSleeve"), LeftArmPivot, TunicMaterial.Object, FVector(0.0, 0.0, -17.0), FVector(0.20, 0.20, 0.36));
+	AddPart(TEXT("LeftHand"), LeftArmPivot, SkinMaterial.Object, FVector(0.0, 0.0, -42.0), FVector(0.16, 0.16, 0.14));
+	AddPart(TEXT("RightSleeve"), RightArmPivot, TunicMaterial.Object, FVector(0.0, 0.0, -17.0), FVector(0.20, 0.20, 0.36));
+	AddPart(TEXT("RightHand"), RightArmPivot, SkinMaterial.Object, FVector(0.0, 0.0, -42.0), FVector(0.16, 0.16, 0.14));
+	AddPart(TEXT("LeftLeg"), LeftLegPivot, PantsMaterial.Object, FVector(0.0, 0.0, -31.0), FVector(0.22, 0.21, 0.56));
+	AddPart(TEXT("LeftBoot"), LeftLegPivot, LeatherMaterial.Object, FVector(5.0, 0.0, -71.0), FVector(0.32, 0.22, 0.26));
+	AddPart(TEXT("RightLeg"), RightLegPivot, PantsMaterial.Object, FVector(0.0, 0.0, -31.0), FVector(0.22, 0.21, 0.56));
+	AddPart(TEXT("RightBoot"), RightLegPivot, LeatherMaterial.Object, FVector(5.0, 0.0, -71.0), FVector(0.32, 0.22, 0.26));
 
 	InputMappingContext = TSoftObjectPtr<UInputMappingContext>(FSoftObjectPath(TEXT("/Game/WA/Characters/Input/IMC_ThirdPerson.IMC_ThirdPerson")));
 	MoveAction = TSoftObjectPtr<UInputAction>(FSoftObjectPath(TEXT("/Game/WA/Characters/Input/IA_Move.IA_Move")));
@@ -60,6 +108,25 @@ AWACharacter::AWACharacter()
 	JumpAction = TSoftObjectPtr<UInputAction>(FSoftObjectPath(TEXT("/Game/WA/Characters/Input/IA_Jump.IA_Jump")));
 	AttackAction = TSoftObjectPtr<UInputAction>(FSoftObjectPath(TEXT("/Game/WA/Characters/Input/IA_Attack.IA_Attack")));
 	InteractAction = TSoftObjectPtr<UInputAction>(FSoftObjectPath(TEXT("/Game/WA/Characters/Input/IA_Interact.IA_Interact")));
+}
+
+void AWACharacter::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+
+	const float MaxWalkSpeed = FMath::Max(GetCharacterMovement()->MaxWalkSpeed, 1.0f);
+	const float SpeedRatio = bDead ? 0.0f : FMath::Clamp(GetVelocity().Size2D() / MaxWalkSpeed, 0.0f, 1.0f);
+	RunBlend = FMath::FInterpTo(RunBlend, SpeedRatio, DeltaSeconds, 10.0f);
+	if (SpeedRatio > 0.01f)
+	{
+		RunCyclePhase = FMath::Fmod(RunCyclePhase + DeltaSeconds * FMath::Lerp(5.0f, 11.0f, SpeedRatio), 2.0f * PI);
+	}
+
+	const float Swing = bDead ? 0.0f : FMath::Sin(RunCyclePhase) * 32.0f * RunBlend;
+	LeftArmPivot->SetRelativeRotation(FRotator(Swing, 0.0, 0.0));
+	RightArmPivot->SetRelativeRotation(FRotator(-Swing, 0.0, 0.0));
+	LeftLegPivot->SetRelativeRotation(FRotator(-Swing * 0.85f, 0.0, 0.0));
+	RightLegPivot->SetRelativeRotation(FRotator(Swing * 0.85f, 0.0, 0.0));
 }
 
 void AWACharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -242,5 +309,5 @@ void AWACharacter::OnRep_Dead()
 {
 	GetCharacterMovement()->DisableMovement();
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	DebugVisual->SetVisibility(false);
+	AdventurerVisual->SetVisibility(false, true);
 }

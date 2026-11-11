@@ -1,6 +1,6 @@
 # WorldAdventure 框架 Demo
 
-UE 5.8.4 C++ 工程，用于验证第三人称开放世界、2–4 人局域网合作探索和 PvP。当前使用灰盒场景和占位角色，不含正式内容。
+UE 5.8.4 C++ 工程，用于验证第三人称开放世界、2–4 人局域网合作探索和 PvP。当前包含风格化初始区域和低多边形冒险者原型，不含正式美术、骨骼动画或完整技能内容。
 
 > 当前状态：Editor 与 Win64 Development 构建通过；本机双进程合作/PvP 连接、角色生成和 HUD 已验证。用户已人工确认主菜单操作、移动方向、跳跃和测试攻击；多人玩法同步、合作免伤、PvP 伤害/复活、探索点、完整流送遍历和真实双机仍需按验收表确认。
 
@@ -9,7 +9,8 @@ UE 5.8.4 C++ 工程，用于验证第三人称开放世界、2–4 人局域网�
 1. 安装 UE 5.8.4、Visual Studio 2022（17.8+）、MSVC 14.44、ATL、Windows SDK 和 .NET Framework 4.6.2 Developer Pack。
 2. 运行 `Scripts/BuildEditor.bat`。
 3. 首次生成地图和输入资产，运行 `Scripts/GenerateDemoContent.bat`。
-4. 用 UE 5.8.4 打开 `WorldAdventure.uproject`，默认启动图为 `L_Demo`，游戏默认图为 `L_MainMenu`。
+4. 生成初始角色材质和区域原型，依次运行 `Scripts/GeneratePrototypeCharacter.bat`、`Scripts/GeneratePrototypeWorld.bat`。
+5. 用 UE 5.8.4 打开 `WorldAdventure.uproject`，默认启动图为 `L_Demo`，游戏默认图为 `L_MainMenu`。
 
 引擎自带 .NET 10；构建脚本已设置 `DOTNET_ROOT`，不依赖系统安装 .NET 10。
 
